@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maha Shivratri | Cosmic Energy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Tiro+Devanagari+Sanskrit&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Cinzel', serif;
+            color: white;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
+        }
+
+        .overlay-content {
+            text-align: center;
+            pointer-events: auto;
+            transition: opacity 1s ease;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-start {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            border-radius: 9999px;
+        }
+
+        .btn-start:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(100, 200, 255, 0.5);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .sanskrit-text {
+            font-family: 'Tiro Devanagari Sanskrit', serif;
+            font-size: 2.5rem;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: floatUp 10s forwards;
+        }
+
+        .english-sub {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeIn 2s forwards 1s;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .trishul-container {
+            width: 150px;
+            height: auto;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 15px rgba(0, 191, 255, 0.5));
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 191, 255, 0.4)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 30px rgba(0, 191, 255, 0.9)); transform: scale(1.05); }
+        }
+
+        #mantra-container {
+            position: absolute;
+            bottom: 10%;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+        }
+        
+        /* Audio visualizer bars */
+        .visualizer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 2px;
+            opacity: 0.3;
+            z-index: 5;
+        }
+        .bar {
+            width: 10px;
+            background: linear-gradient(to top, #00f, #0ff);
+            height: 5px;
+            transition: height 0.1s ease;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Canvas -->
+    <div id="canvas-container">
+        <canvas id="cosmicCanvas"></canvas>
+    </div>
+
+    <!-- UI Overlay -->
+    <div id="ui-layer">
+        
+        <!-- Intro Screen -->
+        <div id="start-screen" class="overlay-content">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400">MAHA SHIVRATRI</h1>
+            <p class="mb-8 text-gray-400">Put on your headphones for the cosmic resonance.</p>
+            <button id="start-btn" class="btn-start">Enter the Void</button>
+        </div>
+
+        <!-- Main Experience (Hidden initially) -->
+        <div id="main-experience" class="hidden flex flex-col items-center w-full h-full justify-center">
+            
+            <!-- SVG Trishul -->
+            <svg class="trishul-container" viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 180V80" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <path d="M50 180L50 200" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <path d="M20 50C20 80 50 80 50 80C50 80 80 80 80 50" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <path d="M50 20V80" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <path d="M20 50L20 20" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <path d="M80 50L80 20" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                <path d="M10 25L20 20L30 25" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+                <path d="M40 25L50 10L60 25" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+                <path d="M70 25L80 20L90 25" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+                <!-- Third Eye Symbol -->
+                <path d="M40 120Q50 110 60 120Q50 130 40 120" fill="#ff4500" opacity="0.8"/>
+            </svg>
+
+            <div id="mantra-display" class="text-center">
+                <!-- Text injected by JS -->
+            </div>
+        </div>
+
+        <div class="visualizer" id="visualizer">
+            <!-- Bars injected by JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- VISUALS: COSMIC PARTICLE SYSTEM ---
+        const canvas = document.getElementById('cosmicCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        let time = 0;
+
+        // Resize handling
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.z = Math.random() * 2 + 0.5; // Depth
+                this.size = Math.random() * 2;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.color = Math.random() > 0.9 ? '#ffd700' : (Math.random() > 0.5 ? '#87ceeb' : '#ffffff');
+            }
+
+            update(audioLevel) {
+                // Movement based on "energy" (audio level)
+                const speedMult = 1 + (audioLevel * 5);
+                
+                // Spiral motion towards center
+                const dx = width/2 - this.x;
+                const dy = height/2 - this.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                // Cosmic drift
+                this.x += this.vx * speedMult;
+                this.y += this.vy * speedMult;
+
+                // Gravitational pull slightly to center for some particles
+                if (dist > 100) {
+                    this.x += (dx / dist) * 0.2 * audioLevel;
+                    this.y += (dy / dist) * 0.2 * audioLevel;
+                }
+
+                // Wrap around screen
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
+
+                // Pulse size with audio
+                this.currentSize = this.size * (1 + audioLevel * 2);
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.currentSize, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 400; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        // --- AUDIO: WEB AUDIO API SYNTHESIS ---
+        // We synthesize sounds to ensure they work without external files and load instantly.
+        let audioCtx;
+        let masterGain;
+        let isPlaying = false;
+        let analyser;
+        let dataArray;
+
+        function initAudio() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0.5;
+            masterGain.connect(audioCtx.destination);
+
+            // Analyser for visuals
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 64;
+            masterGain.connect(analyser);
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+        }
+
+        // 1. Drone Sound (The "Om" Vibration)
+        function playDrone() {
+            // Fundamental
+            const osc1 = audioCtx.createOscillator();
+            osc1.type = 'sawtooth';
+            osc1.frequency.value = 138.59; // C#3 (Om frequency often associated with C#)
+            
+            const gain1 = audioCtx.createGain();
+            gain1.gain.value = 0.1;
+
+            // Low sub
+            const osc2 = audioCtx.createOscillator();
+            osc2.type = 'sine';
+            osc2.frequency.value = 69.30; // C#2
+            
+            const gain2 = audioCtx.createGain();
+            gain2.gain.value = 0.3;
+
+            // Filter to make it warm
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 200;
+
+            osc1.connect(filter);
+            osc2.connect(filter);
+            filter.connect(gain1);
+            filter.connect(gain2);
+            gain1.connect(masterGain);
+            gain2.connect(masterGain);
+
+            osc1.start();
+            osc2.start();
+            
+            // LFO for subtle movement in the drone
+            const lfo = audioCtx.createOscillator();
+            lfo.frequency.value = 0.1; // Slow pulse
+            const lfoGain = audioCtx.createGain();
+            lfoGain.gain.value = 100;
+            lfo.connect(lfoGain);
+            lfoGain.connect(filter.frequency);
+            lfo.start();
+        }
+
+        // 2. Damru Sound (Procedural Drum)
+        function playDamruHit(time) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            // Damru has a pitch bend
+            osc.frequency.setValueAtTime(300, time);
+            osc.frequency.exponentialRampToValueAtTime(150, time + 0.1);
+            
+            gain.gain.setValueAtTime(0.5, time);
+            gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+
+            osc.connect(gain);
+            gain.connect(masterGain);
+
+            osc.start(time);
+            osc.stop(time + 0.2);
+        }
+
+        function startDamruLoop() {
+            let nextNoteTime = audioCtx.currentTime;
+            let rhythmIndex = 0;
+            // A triplet feel: 1 . . 2 . 3 . . 
+            const rhythm = [0.2, 0.2, 0.4, 0.2, 0.2, 0.6]; 
+
+            function schedule() {
+                while (nextNoteTime < audioCtx.currentTime + 0.1) {
+                   playDamruHit(nextNoteTime);
+                   // Sometimes play a second hit for the "double sided" drum feel
+                   if (Math.random() > 0.5) {
+                       playDamruHit(nextNoteTime + 0.08); 
+                   }
+                   
+                   nextNoteTime += rhythm[rhythmIndex];
+                   rhythmIndex = (rhythmIndex + 1) % rhythm.length;
+                }
+                if(isPlaying) requestAnimationFrame(schedule);
+            }
+            schedule();
+        }
+        
+        // 3. Bell Sound (Ghanti)
+        function playBell() {
+             if(!isPlaying) return;
+             const osc = audioCtx.createOscillator();
+             osc.type = 'sine';
+             const gain = audioCtx.createGain();
+             
+             // High pitch random harmonics
+             osc.frequency.setValueAtTime(2000 + Math.random()*500, audioCtx.currentTime);
+             
+             gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+             
+             osc.connect(gain);
+             gain.connect(masterGain);
+             osc.start();
+             osc.stop(audioCtx.currentTime + 1.5);
+             
+             // Schedule next bell
+             setTimeout(playBell, 2000 + Math.random() * 3000);
+        }
+
+
+        // --- MAIN LOOP & LOGIC ---
+
+        const mantras = [
+            { s: "ॐ नमः शिवाय", e: "Om Namah Shivaya" },
+            { s: "मृत्युंजय मंत्र", e: "Om Tryambakam Yajamahe" },
+            { s: "सुगन्धिं पुष्टिवर्धनम्", e: "Sugandhim Pushtivardhanam" },
+            { s: "उर्वारुकमिव बन्धनान्", e: "Urvarukamiva Bandhanan" },
+            { s: "मृत्योर्मुक्षीय मामृतात्", e: "Mrityor Mukshiya Maamritat" },
+            { s: "हर हर महादेव", e: "Har Har Mahadev" }
+        ];
+
+        let mantraIndex = 0;
+        const mantraContainer = document.getElementById('mantra-display');
+
+        function updateMantra() {
+            if(!isPlaying) return;
+            const m = mantras[mantraIndex];
+            
+            // Create elements
+            const sanskrit = document.createElement('div');
+            sanskrit.className = 'sanskrit-text';
+            sanskrit.innerText = m.s;
+            
+            const english = document.createElement('div');
+            english.className = 'english-sub';
+            english.innerText = m.e;
+            
+            // Clear old
+            mantraContainer.innerHTML = '';
+            mantraContainer.appendChild(sanskrit);
+            mantraContainer.appendChild(english);
+
+            mantraIndex = (mantraIndex + 1) % mantras.length;
+            
+            setTimeout(updateMantra, 5000);
+        }
+
+        // Initialize Visualizer Bars
+        const visualizerContainer = document.getElementById('visualizer');
+        const bars = [];
+        for(let i=0; i<30; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            visualizerContainer.appendChild(bar);
+            bars.push(bar);
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Trail effect
+            ctx.fillRect(0, 0, width, height);
+            
+            // Get Audio Data
+            let audioLevel = 0;
+            if(analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for(let i=0; i<dataArray.length; i++) {
+                    sum += dataArray[i];
+                }
+                audioLevel = sum / dataArray.length / 255;
+                
+                // Update visualizer DOM
+                for(let i=0; i<bars.length; i++) {
+                    // Map low frequencies to center bars, highs to edges
+                    const val = dataArray[i % dataArray.length] / 2;
+                    bars[i].style.height = Math.max(5, val) + 'px';
+                    bars[i].style.backgroundColor = `hsl(${200 + val}, 100%, 50%)`;
+                }
+            }
+
+            // Draw glowing center behind Trishul
+            const gradient = ctx.createRadialGradient(width/2, height/2, 10, width/2, height/2, 300);
+            gradient.addColorStop(0, `rgba(0, 191, 255, ${0.1 + audioLevel * 0.2})`);
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(width/2, height/2, 300, 0, Math.PI*2);
+            ctx.fill();
+
+            // Update particles
+            particles.forEach(p => {
+                p.update(audioLevel);
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // Start Button Logic
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('main-experience').classList.remove('hidden');
+            document.getElementById('main-experience').style.display = 'flex';
+            
+            isPlaying = true;
+            initAudio();
+            
+            // Fade in audio
+            const now = audioCtx.currentTime;
+            masterGain.gain.setValueAtTime(0, now);
+            masterGain.gain.linearRampToValueAtTime(0.5, now + 2);
+            
+            playDrone();
+            setTimeout(startDamruLoop, 1000); // Start rhythm after drone settles
+            setTimeout(playBell, 2000);
+            updateMantra();
+        });
+
+        animate();
+
+    </script>
+</body>
+</html>
